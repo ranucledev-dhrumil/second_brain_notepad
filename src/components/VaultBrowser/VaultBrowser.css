@@ -68,6 +68,7 @@
   align-items: center;
   justify-content: space-between;
   border-bottom: 1px solid var(--sb-border-subtle);
+  border-top: 1px solid var(--sb-border-subtle);
   background: var(--sb-surface-toolbar);
   flex-shrink: 0;
 }
@@ -418,6 +419,24 @@
 .vault-detail__body th, .vault-detail__body td { border: 1px solid var(--sb-border-default); padding: 0.4em 0.8em; text-align: left; }
 .vault-detail__body th { background: var(--sb-surface-hover); }
 .vault-detail__body a { color: var(--sb-accent); text-decoration: underline; cursor: pointer; }
+.vault-detail__body.tiptap pre {
+  background: var(--sb-surface-hover);
+  padding: 1em;
+  border-radius: 4px;
+  overflow-x: auto;
+  font-family: Consolas, Monaco, 'Courier New', monospace;
+  border: 1px solid var(--sb-border-default);
+}
+.vault-detail__body.tiptap code {
+  font-family: Consolas, Monaco, 'Courier New', monospace;
+  font-size: 0.9em;
+}
+.vault-detail__body.tiptap p code {
+  background: var(--sb-surface-hover);
+  padding: 0.2em 0.4em;
+  border-radius: 3px;
+}
+
 
 .vault-detail-empty {
   display: flex;

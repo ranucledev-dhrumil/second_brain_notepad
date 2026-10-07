@@ -30,7 +30,9 @@
   },
   "bundle": {
     "active": true,
-    "targets": ["nsis"],
+    "targets": [
+      "nsis"
+    ],
     "icon": [
       "icons/32x32.png",
       "icons/128x128.png",
@@ -44,8 +46,8 @@
         "installerHooks": "installer_hooks.nsh"
       }
     },
-    "resources": [
-      "../second-brain-host/target/release/second-brain-host.exe"
-    ]
+    "resources": {
+      "../second-brain-host/target/release/second-brain-host.exe": "second-brain-host.exe"
+    }
   }
 }

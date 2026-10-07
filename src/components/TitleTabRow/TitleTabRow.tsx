@@ -37,16 +37,7 @@ import type { WorkspaceDocument } from '../../types';
 
 // ── Type helper ───────────────────────────────────────────────────────────────
 
-/**
- * Returns true if the tab is a WorkspaceDocument (shows the dot indicator).
- * Currently all open tabs are WorkspaceDocuments, so this is always true.
- * CHANGE 10/11 will update the tab union type and this predicate will naturally
- * return false for VaultItem-backed tabs.
- */
-function isWorkspaceDoc(tab: WorkspaceDocument): boolean {
-  // WorkspaceDocument has tabOrder; VaultItem does not.
-  return 'tabOrder' in tab;
-}
+
 
 // ── SortableTab ───────────────────────────────────────────────────────────────
 

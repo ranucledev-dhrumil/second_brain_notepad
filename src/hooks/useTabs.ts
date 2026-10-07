@@ -71,7 +71,7 @@ export interface UseTabsReturn {
   /** CHANGE 16: creates a tab pre-filled with captured clipboard text + detected type. */
   captureTab: (body: string, suggestedType: ContentType, title?: string, sourceVaultItemId?: string) => Promise<void>;
   openVaultItemForEdit: (item: VaultItem) => Promise<void>;
-  closeTab: (id: string) => Promise<void>;
+  closeTab: (id: string, reason?: 'explicit' | 'saveToVault') => Promise<void>;
   switchTab: (id: string) => Promise<void>;
   renameTab: (id: string, title: string) => Promise<void>;
   /** Synchronous — updates local state and resets the autosave debounce. */
@@ -327,7 +327,7 @@ export function useTabs(): UseTabsReturn {
   );
 
   const closeTab = useCallback(
-    async (id: string) => {
+    async (id: string, reason: 'explicit' | 'saveToVault' = 'explicit') => {
       // 1. Cancel debounce.
       if (debounceTimerRef.current) {
         clearTimeout(debounceTimerRef.current);
@@ -356,12 +356,26 @@ export function useTabs(): UseTabsReturn {
       // 4. Update local state.
       const remaining = tabs.filter(t => t.id !== id);
 
-      // CHANGE 29: Quit the app when the last tab is closed (Notepad-style).
-      // Save-to-Vault via toolbar/Ctrl+S no longer closes tabs, so this only fires
-      // on explicit close (X button, Ctrl+W, or close-dialog "Close without saving").
       if (remaining.length === 0) {
-        await getCurrentWindow().close();
-        return;
+        if (reason === 'explicit') {
+          await getCurrentWindow().close();
+          return;
+        } else {
+          // If closed due to Save-to-Vault, open a fresh Untitled tab instead of quitting
+          try {
+            const doc = await invoke<WorkspaceDocument>('new_workspace_document', {
+              title: 'Untitled',
+            });
+            setTabs([{ ...doc, isActive: true }]);
+            setActiveTabId(doc.id);
+            setTabBodies({ [doc.id]: '' });
+            setTabUrls({ [doc.id]: '' });
+            setDirtyTabIds(new Set([doc.id]));
+          } catch (e) {
+            console.error('Failed to create new tab after save to vault', e);
+          }
+          return;
+        }
       }
 
       let newActiveId = activeTabId;
@@ -399,23 +413,27 @@ export function useTabs(): UseTabsReturn {
    * Only runs if the tab has NOT been manually renamed (Notepad-style behavior).
    * Does NOT persist to DB — title persists only when user manually renames or on rename_workspace_document.
    */
-  const updateAutoTitle = useCallback((id: string, body: string, isCodeMode?: boolean) => {
+  const updateAutoTitle = useCallback((id: string, body: string, _isCodeMode?: boolean) => {
     if (manuallyRenamedRef.current.has(id)) return;
     
     let firstLine = '';
+    const lines = body.split('\n');
     
-    if (isCodeMode) {
-      // Find first non-empty line inside or outside fences, skip backticks
-      const lines = body.split('\n');
-      for (let i = 0; i < lines.length; i++) {
-        const line = lines[i].trim();
-        if (line && !line.startsWith('```')) {
-          firstLine = line;
-          break;
-        }
+    for (let i = 0; i < lines.length; i++) {
+      let line = lines[i].trim();
+      
+      // Skip code fence markers
+      if (line.startsWith('```')) {
+        continue;
       }
-    } else {
-      firstLine = body.trimStart().split('\n')[0].replace(/^#+\s*/, '').trim();
+      
+      // Strip markdown heading syntax so we just get the text
+      line = line.replace(/^#+\s*/, '').trim();
+      
+      if (line) {
+        firstLine = line;
+        break;
+      }
     }
     
     const derived = firstLine.length > AUTO_TITLE_MAX_CHARS

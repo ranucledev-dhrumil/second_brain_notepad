@@ -278,7 +278,7 @@ function App() {
       // Success: dismiss dialog and close the tab
       setPendingCloseTabId(null);
       setIsSaving(false);
-      await closeTab(id);
+      await closeTab(id, 'saveToVault');
     } catch (e: unknown) {
       // Failure: keep dialog open, show contextual error
       setIsSaving(false);

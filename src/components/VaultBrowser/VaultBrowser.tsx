@@ -388,7 +388,9 @@ export default function VaultBrowser({ onEdit, onViewChange, onFlash }: VaultBro
                         {badge.icon} {badge.label}
                       </span>
                     </div>
-                    <p className="vault-item-card__preview">{item.body || '(Empty)'}</p>
+                    <p className="vault-item-card__preview">
+                      {exportAsTxt(item.body || '').slice(0, 120) || '(Empty)'}
+                    </p>
                     <div className="vault-item-card__footer">
                       {item.tags.length > 0 && (
                         <div className="vault-item-card__tags">

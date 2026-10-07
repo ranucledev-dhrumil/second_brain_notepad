@@ -2,7 +2,7 @@
 
 A Windows desktop app built with [Tauri v2](https://tauri.app/) (Rust backend) and a TypeScript/React frontend (Vite).
 
-> **Multi-session project** — this README is written so any new Antigravity session can resume work without re-deriving the setup. Read this before making any changes.
+> **Multi-session project** — this README is written so any new Antigravity session can resume work without re-deriving the setup. Read this before making any changes. If you are touching the browser extension or native messaging, you MUST read [AI_ARCHITECTURE_WARNING.md](AI_ARCHITECTURE_WARNING.md) first.
 
 ---
 
@@ -151,3 +151,7 @@ This project is built incrementally across 28 sequential changes. Each session s
 ## Known Limitations
 See [v1_limitations.md]  for a list of known limitations and features out-of-scope for the v1 release.
 
+
+## Building and Distribution
+
+For instructions on building the portable executable or the NSIS installer, and troubleshooting browser extension connectivity, please read the [BUILD_AND_DISTRIBUTION.md](BUILD_AND_DISTRIBUTION.md) guide.
